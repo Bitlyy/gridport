@@ -2,7 +2,7 @@ name: Deploy to Firebase Hosting on push
 on:
   push:
     branches:
-      - main # Если у тебя ветка называется master, замени на master
+      - main
 
 jobs:
   build_and_deploy:
