@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zello Network - Приватные выделенные прокси</title>
+    
+    <!-- Подключение стильного современного шрифта Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Базовые настройки и строгий ЧБ стиль */
+        :root {
+            --bg-color: #ffffff;
+            --card-bg: #f4f4f5; /* Максимально нейтральный светло-серый */
+            --text-main: #000000;
+            --text-muted: #71717a;
+            --black: #000000;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            outline: none;
+            box-shadow: none !important; /* Полностью отключаем любые тени */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        /* Шапка и меню */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: var(--text-muted);
+        }
+
+        /* Главный экран (Hero) */
+        .hero {
+            text-align: center;
+            padding: 70px 5% 40px;
+        }
+
+        .hero h1 {
+            font-size: 38px;
+            font-weight: 800;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        /* Преимущества (с SVG иконками) */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 40px;
+            padding: 50px 5% 70px;
+            text-align: center;
+        }
+
+        .icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .feature-item h3 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .feature-item p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Тарифы */
+        .pricing-section {
+            padding: 60px 5%;
+            background-color: var(--white);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 35px;
+            letter-spacing: -1px;
+        }
+
+        /* Слайдер доп IP */
+        .extra-device {
+            text-align: center;
+            margin: 0 auto 40px auto;
+            background-color: var(--card-bg);
+            padding: 24px;
+            border-radius: 32px; 
+            max-width: 400px;
+        }
+
+        .extra-device label {
+            display: block;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 999px;
+            background: var(--black);
+            cursor: pointer;
+            margin-top: -8px;
+            transition: transform 0.1s;
+        }
+        
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.1);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #d4d4d8; 
+            border-radius: 999px;
+        }
+
+        .slider-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+
+        /* Сетка тарифов */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 35px 25px;
+            border-radius: 32px; 
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: var(--black);
+            color: var(--white);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 999px; 
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .term {
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .price-block {
+            margin-bottom: 20px;
+        }
+
+        .current-price {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .old-price {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            font-size: 16px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        .desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background-color: var(--black);
+            color: var(--white);
+            padding: 16px 24px;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            border-radius: 999px;
+            transition: opacity 0.2s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Подвал */
+        footer {
+            padding: 40px 5%;
+            background-color: #000000;
+            color: #71717a;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #a1a1aa;
+            margin: 0 10px;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        
+        footer a:hover {
+            color: #ffffff;
+        }
+
+        footer p {
+            margin: 8px 0;
+            font-weight: 600;
+        }
+
+        .footer-contacts {
+            margin: 20px 0;
+            font-size: 14px;
+            color: #a1a1aa;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 40px 30px;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 8px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .modal-content p {
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 16px 24px;
+            background-color: var(--card-bg);
+            margin-bottom: 16px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .modal-content input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .hero h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header>
+        <div class="logo">Zello Network</div>
+        <nav>
+            <a href="#features">Преимущества</a>
+            <a href="#pricing">Тарифы</a>
+            <a href="#footer">Контакты</a>
+        </nav>
+    </header>
+
+    <!-- Главный экран -->
+    <section class="hero">
+        <h1>Приватные прокси-серверы IPv4/IPv6<br>для разработчиков, парсинга и стабильного гейминга</h1>
+    </section>
+
+    <!-- Преимущества -->
+    <section id="features" class="features">
+        <div class="feature-item">
+            <div class="icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+            </div>
+            <h3>Высокая скорость</h3>
+            <p>Выделенные порты с пропускной способностью до 1 Гбит/с. Никаких искусственных ограничений и лимитов на загрузку данных.</p>
+        </div>
+        <div class="feature-item">
+            <div class="icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <h3>Стабильный аптайм 99.9%</h3>
+            <p>Надежное серверное оборудование гарантирует работу 24/7 без разрывов соединения, просадок пинга и потери сетевых пакетов.</p>
+        </div>
+        <div class="feature-item">
+            <div class="icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+            </div>
+            <h3>Полная анонимность</h3>
+            <p>Вы получаете исключительно чистые IPv4/IPv6 адреса "в одни руки". Они не определяются спам-фильтрами и защищают ваш реальный IP.</p>
+        </div>
+    </section>
+
+    <!-- Тарифы -->
+    <section id="pricing" class="pricing-section">
+        <h2 class="section-title">Тарифные планы</h2>
+        
+        <!-- Слайдер дополнительных IP -->
+        <div class="extra-device">
+            <label>Дополнительные IP / Потоки: <span id="ipCountDisplay">0</span> шт.</label>
+            <input type="range" id="extraIpSlider" min="0" max="7" value="0" step="1">
+            <div class="slider-values">
+                <span>0</span>
+                <span>7 MAX</span>
+            </div>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Карточка 1 -->
+            <div class="card">
+                <h3>Тариф 1 месяц</h3>
+                <p class="term">Доступ на 30 дней</p>
+                <div class="price-block">
+                    <span class="current-price"><span class="val" data-base="40">40</span> ₽</span>
+                </div>
+                <p class="desc">В тариф входит аренда 1 выделенного сетевого IPv4/IPv6 прокси-порта со скоростью до 1 Гбит/с, без лимита по трафику, с поддержкой протоколов HTTP/SOCKS5. Идеально подходит для стабильного гейминга (снижение пинга) и безопасной веб-разработки. Активация происходит автоматически сразу после оплаты.</p>
+                <button class="btn" onclick="openModal('Тариф 1 месяц')">Оформить заказ</button>
+            </div>
+
+            <!-- Карточка 2 -->
+            <div class="card">
+                <div class="badge">-5%</div>
+                <h3>Тариф 3 месяца</h3>
+                <p class="term">Доступ на 90 дней</p>
+                <div class="price-block">
+                    <span class="current-price"><span class="val" data-base="114">114</span> ₽</span>
+                    <span class="old-price"><span class="old-val" data-base="120">120</span> ₽</span>
+                </div>
+                <p class="desc">Аренда высокоскоростного прокси-порта на 90 дней. Полный безлимит по трафику, скорость канала до 1 Гбит/с, современные протоколы HTTP/SOCKS5. Оптимальный пакет для бесперебойной работы сетевых шлюзов, парсинга данных и повседневных задач. Моментальная автоматическая выдача доступа.</p>
+                <button class="btn" onclick="openModal('Тариф 3 месяца')">Оформить заказ</button>
+            </div>
+
+            <!-- Карточка 3 -->
+            <div class="card">
+                <div class="badge">-6%</div>
+                <h3>Тариф 6 месяцев</h3>
+                <p class="term">Доступ на 180 дней</p>
+                <div class="price-block">
+                    <span class="current-price"><span class="val" data-base="225">225</span> ₽</span>
+                    <span class="old-price"><span class="old-val" data-base="240">240</span> ₽</span>
+                </div>
+                <p class="desc">Длительный доступ к выделенной линии (180 дней). Гарантированный аптайм 99.9%, отсутствие блокировок и спам-фильтров со стороны целевых серверов. Решение отлично подходит для корпоративного использования, работы с мультиаккаунтами и шифрования трафика. Настройка за 1 минуту.</p>
+                <button class="btn" onclick="openModal('Тариф 6 месяцев')">Оформить заказ</button>
+            </div>
+
+            <!-- Карточка 4 -->
+            <div class="card">
+                <div class="badge">-8%</div>
+                <h3>Тариф 12 месяцев</h3>
+                <p class="term">Доступ на 365 дней</p>
+                <div class="price-block">
+                    <span class="current-price"><span class="val" data-base="440">440</span> ₽</span>
+                    <span class="old-price"><span class="old-val" data-base="480">480</span> ₽</span>
+                </div>
+                <p class="desc">Максимальная выгода для долгосрочных IT-проектов и разработчиков ПО. Целый год стабильной работы выделенного порта (HTTP/SOCKS5, 1 Гбит/с) без скрытых ограничений и падений скорости. Премиальный маршрут трафика и наивысшая степень анонимности в сети. Выдача мгновенно после успешной оплаты.</p>
+                <button class="btn" onclick="openModal('Тариф 12 месяцев')">Оформить заказ</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал (Юридическая информация для Anypay + Контакты) -->
+    <footer id="footer">
+        <div style="margin-bottom: 16px;">
+            <a href="#">Пользовательское соглашение / Оферта</a> &nbsp;|&nbsp; 
+            <a href="#">Политика конфиденциальности</a>
+        </div>
+        
+        <!-- Контакты перенесены в подвал -->
+        <div class="footer-contacts">
+            Поддержка: <a href="mailto:support@zellovpn.ru">support@zellovpn.ru</a> &nbsp;|&nbsp; <a href="https://t.me/ZelloSupportBot" target="_blank">Telegram (@ZelloSupportBot)</a>
+        </div>
+
+        <p>Сайт предоставляет услуги аренды сетевых прокси и вычислительных мощностей. Передаваемые контактные данные (Email) надежно защищены и не передаются третьим лицам.</p>
+        <p>Оплата услуг производится через лицензированный процессинговый центр. Все финансовые транзакции защищены протоколами безопасности.</p>
+        <p style="margin-top: 16px;">Самозанятый Иванов Иван Иванович, ИНН: 123456789012</p>
+    </footer>
+
+    <!-- Поп-ап окно покупки -->
+    <div id="buyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Оформление заказа</h2>
+            <p id="modalTariffName">Тариф</p>
+            <input type="email" placeholder="Укажите Email для получения товара" required>
+            <button class="btn" onclick="fakePay()">Перейти к оплате</button>
+        </div>
+    </div>
+
+    <script>
+        // Логика стильного ползунка (слайдера)
+        const slider = document.getElementById('extraIpSlider');
+        const ipCountDisplay = document.getElementById('ipCountDisplay');
+        const currentPrices = document.querySelectorAll('.val');
+        const oldPrices = document.querySelectorAll('.old-val');
+
+        slider.addEventListener('input', function() {
+            const extraIps = parseInt(this.value);
+            ipCountDisplay.textContent = extraIps;
+            
+            const addValue = extraIps * 10;
+
+            currentPrices.forEach(price => {
+                const base = parseInt(price.getAttribute('data-base'));
+                price.textContent = base + addValue;
+            });
+
+            oldPrices.forEach(price => {
+                const base = parseInt(price.getAttribute('data-base'));
+                price.textContent = base + addValue;
+            });
+        });
+
+        // Логика модального окна
+        const modal = document.getElementById('buyModal');
+        const modalTariffName = document.getElementById('modalTariffName');
+
+        function openModal(tariffName) {
+            const extraIps = parseInt(slider.value);
+            let extraText = extraIps > 0 ? ` (+ ${extraIps} доп. IP)` : "";
+            modalTariffName.textContent = "Выбран: " + tariffName + extraText;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function fakePay() {
+            const emailInput = document.querySelector('.modal-content input').value;
+            if(emailInput.includes('@')) {
+                alert('Подключение к защищенному платежному шлюзу... (Демонстрационный режим)');
+                closeModal();
+            } else {
+                alert('Пожалуйста, введите корректный адрес электронной почты.');
+            }
+        }
+    </script>
+</body>
+</html>
