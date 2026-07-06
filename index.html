@@ -10,8 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-    <!-- Подключаем библиотеку SHA256 для шифрования на стороне клиента -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+    <!-- Подключаем библиотеку MD5 для шифрования на стороне клиента -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 
     <style>
         /* Базовые настройки и ЧБ стиль */
@@ -721,7 +721,7 @@
             }
         }
 
-        // ПОЛНОСТЬЮ АВТОНОМНЫЙ ПЕРЕХОД НА ОПЛАТУ ЧЕРЕЗ КЛИЕНТСКИЙ SHA256
+        // ПОЛНОСТЬЮ АВТОНОМНЫЙ ПЕРЕХОД НА ОПЛАТУ ЧЕРЕЗ КЛИЕНТСКИЙ MD5
         window.fakePay = function() {
             const emailInput = document.querySelector('#buyModal input').value.trim();
             if(!emailInput.includes('@')) {
@@ -750,17 +750,17 @@
             
             const currency = 'RUB';
             const order_id = Date.now().toString() + Math.floor(Math.random() * 90 + 10).toString();
-            const safeDesc = `Оплата заказа ${order_id}`;
+            const safeDesc = `Order_${order_id}`;
 
-            // Формируем SHA-256 подпись СТРОГО по формуле, которая работала у вас на Vercel
-            // merchant_id:pay_id:amount:currency:desc:success_url:fail_url:secret_key
-            const signString = `${anypayMerchantId}:${order_id}:${amountStr}:${currency}:${safeDesc}:::${anypaySecretKey}`;
+            // Формируем MD5 подпись по формуле AnyPay:
+            // currency:amount:secret_key:merchant_id:pay_id
+            const signString = `${currency}:${amountStr}:${anypaySecretKey}:${anypayMerchantId}:${order_id}`;
             
             // Логируем для отладки в консоли браузера (F12 -> Console)
             const maskedKey = anypaySecretKey.substring(0, 3) + '***' + anypaySecretKey.substring(anypaySecretKey.length - 3);
-            console.log("Строка шифрования SHA256 (проверка):", `${anypayMerchantId}:${order_id}:${amountStr}:${currency}:${safeDesc}:::${maskedKey}`);
+            console.log("Строка шифрования MD5 (проверка):", `${currency}:${amountStr}:${maskedKey}:${anypayMerchantId}:${order_id}`);
 
-            const signature = sha256(signString);
+            const signature = md5(signString);
 
             // Собираем параметры GET-запроса
             const params = new URLSearchParams({
