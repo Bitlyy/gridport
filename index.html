@@ -477,7 +477,6 @@
             </div>
         </div>
 
-        <!-- Сетка тарифов, которая отрисуется автоматически из pricing.json -->
         <div class="pricing-grid">
             <p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">Загрузка тарифов...</p>
         </div>
@@ -504,10 +503,11 @@
             <h2>Оформление заказа</h2>
             <p id="modalTariffName">Тариф</p>
             <input type="email" placeholder="Укажите Email для получения товара" required>
-            <button class="btn" onclick="fakePay()">Перейти к оплате</button>
+            <button class="btn" id="payButton" onclick="fakePay()">Перейти к оплате</button>
         </div>
     </div>
 
+    <!-- Модальные окна с юридическими текстами -->
     <div id="termsModal" class="modal">
         <div class="doc-modal-content">
             <span class="close-btn" onclick="closeModal('termsModal')">&times;</span>
@@ -515,7 +515,7 @@
             
             <h3>1. ОБЩИЕ ПОЛОЖЕНИЯ</h3>
             <p>1.1. Настоящий документ является официальным предложением (публичной офертой) Исполнителя («Gridport Network Solutions») и содержит все существенные условия по оказанию услуг аренды вычислительных мощностей и предоставлению доступа к прокси-серверам (далее — Услуги).</p>
-            <p>1.2. В соответствии с пунктом 2 статьи 437 Гражданского Кодекса Российской Федерации (ГК РФ), в случае принятия изложенных ниже условий и оплаты услуг, физическое или юридическое лицо, производящее акцепт этой оферты, становится Заказчиком.</p>
+            <p>1.2. В соответствии с пунктом 2 статьи 437 Гражданского Кодекса Российской Федерации (ГК РФ), в случае принятия изложенных ниже условий и оплаты услуг, физическое или юридическое лицо, производищее акцепт этой оферты, становится Заказчиком.</p>
 
             <h3>2. ПРЕДМЕТ СОГЛАШЕНИЯ</h3>
             <p>2.1. Исполнитель обязуется предоставить Заказчику тестовый или постоянный доступ к сетевым прокси-серверам (выделенным портам передачи данных) в соответствии с выбранным тарифным планом, а Заказчик обязуется оплатить эти Услуги.</p>
@@ -552,12 +552,35 @@
         </div>
     </div>
 
-    <script>
-        // Итоговые данные о тарифах
-        let pricingData = null; 
-        const selectedTierId = 'basic'; // ID тарифа, который рендерим
+    <!-- ПОДКЛЮЧАЕМ ИНИЦИАЛИЗАЦИЮ FIREBASE НА КЛИЕНТЕ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Переменные заказа
+        // Firebase Web SDK Конфигурация
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQz7jhfZWJ78RmTF7xSyM24FCF7Td7kbA",
+            authDomain: "gridport-bdaba.firebaseapp.com",
+            projectId: "gridport-bdaba",
+            storageBucket: "gridport-bdaba.firebasestorage.app",
+            messagingSenderId: "277204054703",
+            appId: "1:277204054703:web:89479bffe06ce18b9eda5a",
+            measurementId: "G-DXB796CT4H"
+        };
+
+        // Инициализируем локальный Firebase SDK на белом сайте
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Итоговый конфиг на фронтенде
+        let pricingData = null; 
+        const selectedTierId = 'basic'; // Берем ID тарифа 'basic' из JSON в файле pricing.json
+
+        // Стейты AnyPay (будут динамически загружены из Firestore)
+        let anypayMerchantId = '';
+        let anypaySecretKey = '';
+
+        // Локальные стейты заказа
         let activeTierId = '';
         let activeDays = 30;
         let activeBasePrice = 40;
@@ -565,20 +588,32 @@
         const slider = document.getElementById('extraIpSlider');
         const ipCountDisplay = document.getElementById('ipCountDisplay');
 
-        // Автозагрузка статического файла pricing.json (Firebase Hosting)
+        // Автоматический старт загрузки цен при открытии сайта
         window.addEventListener('DOMContentLoaded', loadPricing);
 
         async function loadPricing() {
             try {
-                // Прямой запрос к локальному файлу pricing.json без Cloud Functions!
-                const response = await fetch('/pricing.json');
-                if (!response.ok) throw new Error('Ошибка чтения pricing.json');
-                pricingData = await response.json();
+                // 1. Просто читаем статический файл pricing.json из папки хостинга
+                const pricingRes = await fetch('/pricing.json');
+                if (!pricingRes.ok) throw new Error('Ошибка чтения pricing.json');
+                pricingData = await pricingRes.json();
                 
-                // На основе pricing.json рендерим карточки
+                // Рендерим тарифные карточки
                 renderPlans();
+
+                // 2. БЕЗОПАСНО читаем ключи AnyPay напрямую из документа "settings/anypay" в вашем Firestore
+                const anypaySnap = await getDoc(doc(db, "settings", "anypay"));
+                if (anypaySnap.exists()) {
+                    const data = anypaySnap.data();
+                    anypayMerchantId = String(data.merchant_id).trim();
+                    anypaySecretKey = String(data.secret_key).trim();
+                    console.log("Ключи AnyPay успешно подгружены из Firestore!");
+                } else {
+                    console.error("Ошибка: Документ settings/anypay не найден в вашей базе данных!");
+                }
+
             } catch (err) {
-                console.error("Ошибка загрузки цен:", err);
+                console.error("Не удалось запустить сайт:", err);
                 document.querySelector('.pricing-grid').innerHTML = 
                     `<p style="text-align: center; color: red; grid-column: 1 / -1;">Ошибка получения цен. Попробуйте обновить страницу.</p>`;
             }
@@ -586,7 +621,7 @@
 
         function renderPlans() {
             const pricingGrid = document.querySelector('.pricing-grid');
-            pricingGrid.innerHTML = ''; 
+            pricingGrid.innerHTML = ''; // Стираем заглушку
 
             const tier = pricingData.TIERS[selectedTierId];
             if (!tier) {
@@ -645,7 +680,7 @@
         });
 
         // Открытие модального окна покупки
-        function openModal(tierId, days, tariffName, basePrice) {
+        window.openModal = function(tierId, days, tariffName, basePrice) {
             activeTierId = tierId;
             activeDays = days;
             activeBasePrice = basePrice;
@@ -656,31 +691,38 @@
             document.getElementById('buyModal').style.display = 'flex';
         }
 
-        function closeModal(modalId) {
+        window.closeModal = function(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
 
-        // Закрытие по клику вне окна
+        window.openDoc = function(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = 'none';
             }
         }
 
-        // ПОЛНОСТЬЮ АВТОНОМНЫЙ И СВОБОДНЫЙ ПЕРЕХОД НА КАССУ БЕЗ ВНЕШНИХ СЕРВЕРОВ И КАРТ
-        // (Обязательно настройте переменные MERCHANT_ID и SECRET_KEY ниже!)
-        function fakePay() {
+        // ПОЛНОСТЬЮ АВТОНОМНЫЙ ПЕРЕХОД НА ОПЛАТУ ЧЕРЕЗ КЛИЕНТСКИЙ MD5
+        window.fakePay = function() {
             const emailInput = document.querySelector('#buyModal input').value.trim();
             if(!emailInput.includes('@')) {
                 alert('Пожалуйста, введите корректный адрес электронной почты.');
                 return;
             }
 
-            // =========================================================================
-            // КОНФИГУРАЦИЯ СВЯЗИ С ANYPAY ПРЯМО НА КЛИЕНТЕ
-            // =========================================================================
-            const MERCHANT_ID = '17916'; // ID вашего проекта из AnyPay
-            const SECRET_KEY = 'ВАШ_СЕКРЕТНЫЙ_КЛЮЧ_ANYPAY'; // Секретный ключ AnyPay
+            // ПРОВЕРКА: Если ключи еще не успели загрузиться из Firestore
+            if (!anypayMerchantId || !anypaySecretKey) {
+                alert('Ошибка: ключи AnyPay еще не подгрузились из Firestore. Подождите пару секунд и попробуйте еще раз.');
+                return;
+            }
+
+            const payButton = document.getElementById('payButton');
+            const originalText = payButton.textContent;
+            payButton.textContent = 'Перенаправление...';
+            payButton.disabled = true;
 
             const extraIps = parseInt(slider.value);
             const months = Math.max(1, Math.round(activeDays / 30));
@@ -693,13 +735,13 @@
             const order_id = Date.now().toString() + Math.floor(Math.random() * 90 + 10).toString();
             const safeDesc = `Оплата заказа ${order_id}`;
 
-            // Генерация MD5 подписи: currency:amount:secret_key:merchant_id:pay_id
-            const signString = `${currency}:${amountStr}:${SECRET_KEY}:${MERCHANT_ID}:${order_id}`;
+            // Рассчитываем подпись MD5 на основе динамических ключей из Firestore!
+            const signString = `${currency}:${amountStr}:${anypaySecretKey}:${anypayMerchantId}:${order_id}`;
             const signature = md5(signString);
 
-            // Параметры GET запроса
+            // Собираем параметры GET-запроса
             const params = new URLSearchParams({
-                merchant_id: MERCHANT_ID,
+                merchant_id: anypayMerchantId,
                 pay_id: order_id,
                 amount: amountStr,
                 currency: currency,
@@ -708,7 +750,7 @@
                 sign: signature
             });
 
-            // Направляем модератора на настоящую форму оплаты карт/СБП
+            // Направляем на оплату AnyPay напрямую
             window.location.href = `https://anypay.io/merchant?${params.toString()}`;
         }
     </script>
