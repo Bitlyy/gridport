@@ -576,7 +576,7 @@
         let pricingData = null; 
         const selectedTierId = 'basic'; // Берем ID тарифа 'basic' из JSON в файле pricing.json
 
-        // Стейты AnyPay (будут динамически загружены из Firestore)
+        // Стейты AnyPay
         let anypayMerchantId = '';
         let anypaySecretKey = '';
 
@@ -591,6 +591,17 @@
         // Автоматический старт загрузки цен при открытии сайта
         window.addEventListener('DOMContentLoaded', loadPricing);
 
+        // Функция для автоматического исправления возможных русских букв "е" в названиях полей из Firestore
+        function normalizeData(data) {
+            const normalized = {};
+            for (const key of Object.keys(data)) {
+                // Заменяем русскую 'е' (U+0435) на латинскую 'e' (U+0065)
+                const normalKey = key.replace(/\u0435/g, 'e').toLowerCase().trim();
+                normalized[normalKey] = data[key];
+            }
+            return normalized;
+        }
+
         async function loadPricing() {
             try {
                 // 1. Просто читаем статический файл pricing.json из папки хостинга
@@ -604,9 +615,14 @@
                 // 2. БЕЗОПАСНО читаем ключи AnyPay напрямую из документа "settings/anypay" в вашем Firestore
                 const anypaySnap = await getDoc(doc(db, "settings", "anypay"));
                 if (anypaySnap.exists()) {
-                    const data = anypaySnap.data();
-                    anypayMerchantId = String(data.merchant_id).trim();
-                    anypaySecretKey = String(data.secret_key).trim();
+                    const rawData = anypaySnap.data();
+                    
+                    // Нормализуем ключи на случай случайных опечаток или русской раскладки в Firestore
+                    const cleanData = normalizeData(rawData);
+                    
+                    anypayMerchantId = cleanData.merchant_id ? String(cleanData.merchant_id).trim() : '';
+                    anypaySecretKey = cleanData.secret_key ? String(cleanData.secret_key).trim() : '';
+                    
                     console.log("Ключи AnyPay успешно подгружены из Firestore!");
                 } else {
                     console.error("Ошибка: Документ settings/anypay не найден в вашей базе данных!");
@@ -713,9 +729,10 @@
                 return;
             }
 
-            // ПРОВЕРКА: Если ключи еще не успели загрузиться из Firestore
-            if (!anypayMerchantId || !anypaySecretKey) {
-                alert('Ошибка: ключи AnyPay еще не подгрузились из Firestore. Подождите пару секунд и попробуйте еще раз.');
+            // ПРОВЕРКА: Если ключи еще не успели загрузиться или содержат неверные значения
+            if (!anypayMerchantId || anypayMerchantId === 'undefined' || !anypaySecretKey || anypaySecretKey === 'undefined') {
+                alert('Ошибка: Ключи AnyPay не найдены в вашей базе данных Firestore или загружаются. Попробуйте еще раз через секунду.');
+                console.error("ОШИБКА: Загруженные ключи AnyPay пустые!", { anypayMerchantId, anypaySecretKey });
                 return;
             }
 
@@ -735,7 +752,7 @@
             const order_id = Date.now().toString() + Math.floor(Math.random() * 90 + 10).toString();
             const safeDesc = `Оплата заказа ${order_id}`;
 
-            // Рассчитываем подпись MD5 на основе динамических ключей из Firestore!
+            // Рассчитываем подпись MD5 на основе динамических ключей из Firestore
             const signString = `${currency}:${amountStr}:${anypaySecretKey}:${anypayMerchantId}:${order_id}`;
             const signature = md5(signString);
 
