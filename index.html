@@ -477,104 +477,9 @@
             </div>
         </div>
 
+        <!-- Сетка тарифов, которая отрисуется автоматически из Firestore -->
         <div class="pricing-grid">
-            
-            <!-- ====== LITE TIER ====== -->
-            <div class="card">
-                <h3>Lite 1 месяц</h3>
-                <p class="term">1 ГБ/день • На 30 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="40" data-months="1">40</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="50" data-months="1">50</span> ₽</span>
-                </div>
-                <p class="desc">Идеально подходит для стабильного гейминга (снижение пинга) и базовых задач. Лимит трафика 1 ГБ в день.</p>
-                <button class="btn" onclick="openModal('Lite 1 месяц')">Оформить заказ</button>
-            </div>
-
-            <div class="card">
-                <div class="badge">-8%</div>
-                <h3>Lite 3 месяца</h3>
-                <p class="term">1 ГБ/день • На 90 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="110" data-months="3">110</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="120" data-months="3">120</span> ₽</span>
-                </div>
-                <p class="desc">Оптимальный пакет для бесперебойной работы сетевых шлюзов. Лимит трафика 1 ГБ в день.</p>
-                <button class="btn" onclick="openModal('Lite 3 месяца')">Оформить заказ</button>
-            </div>
-
-            <div class="card">
-                <div class="badge">-16%</div>
-                <h3>Lite 6 месяцев</h3>
-                <p class="term">1 ГБ/день • На 180 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="200" data-months="6">200</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="240" data-months="6">240</span> ₽</span>
-                </div>
-                <p class="desc">Длительный доступ к выделенной линии. Решение отлично подходит для шифрования трафика.</p>
-                <button class="btn" onclick="openModal('Lite 6 месяцев')">Оформить заказ</button>
-            </div>
-
-            <div class="card">
-                <div class="badge">-20%</div>
-                <h3>Lite 12 месяцев</h3>
-                <p class="term">1 ГБ/день • На 365 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="380" data-months="12">380</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="480" data-months="12">480</span> ₽</span>
-                </div>
-                <p class="desc">Максимальная выгода для долгосрочных IT-проектов и пользователей. Наивысшая степень анонимности.</p>
-                <button class="btn" onclick="openModal('Lite 12 месяцев')">Оформить заказ</button>
-            </div>
-
-            <!-- ====== BASIC TIER ====== -->
-            <div class="card">
-                <h3>Basic 1 месяц</h3>
-                <p class="term">2 ГБ/день • На 30 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="60" data-months="1">60</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="80" data-months="1">80</span> ₽</span>
-                </div>
-                <p class="desc">Расширенный пакет для разработчиков, парсинга и активного веб-серфинга. Лимит 2 ГБ в день.</p>
-                <button class="btn" onclick="openModal('Basic 1 месяц')">Оформить заказ</button>
-            </div>
-
-            <div class="card">
-                <div class="badge">-5%</div>
-                <h3>Basic 3 месяца</h3>
-                <p class="term">2 ГБ/день • На 90 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="170" data-months="3">170</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="180" data-months="3">180</span> ₽</span>
-                </div>
-                <p class="desc">Надежный вариант для стабильной работы автоматизаций, SMM-софта и ботов. Лимит 2 ГБ в день.</p>
-                <button class="btn" onclick="openModal('Basic 3 месяца')">Оформить заказ</button>
-            </div>
-
-            <div class="card">
-                <div class="badge">-11%</div>
-                <h3>Basic 6 месяцев</h3>
-                <p class="term">2 ГБ/день • На 180 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="320" data-months="6">320</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="360" data-months="6">360</span> ₽</span>
-                </div>
-                <p class="desc">Полугодовая аренда расширенной линии. Отсутствие блокировок и обрывов сессий.</p>
-                <button class="btn" onclick="openModal('Basic 6 месяцев')">Оформить заказ</button>
-            </div>
-
-            <div class="card">
-                <div class="badge">-18%</div>
-                <h3>Basic 12 месяцев</h3>
-                <p class="term">2 ГБ/день • На 365 дней</p>
-                <div class="price-block">
-                    <span class="current-price"><span class="val" data-base="590" data-months="12">590</span> ₽</span>
-                    <span class="old-price"><span class="old-val" data-base="720" data-months="12">720</span> ₽</span>
-                </div>
-                <p class="desc">Премиум-вариант на год. Стабильная работа выделенного порта и двойной лимит трафика каждый день.</p>
-                <button class="btn" onclick="openModal('Basic 12 месяцев')">Оформить заказ</button>
-            </div>
-
+            <p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">Загрузка тарифов...</p>
         </div>
     </section>
 
@@ -603,6 +508,7 @@
         </div>
     </div>
 
+    <!-- Модальные окна с юридическими текстами (модераторы их проверяют) -->
     <div id="termsModal" class="modal">
         <div class="doc-modal-content">
             <span class="close-btn" onclick="closeModal('termsModal')">&times;</span>
@@ -611,27 +517,20 @@
             <h3>1. ОБЩИЕ ПОЛОЖЕНИЯ</h3>
             <p>1.1. Настоящий документ является официальным предложением (публичной офертой) Исполнителя («Gridport Network Solutions») и содержит все существенные условия по оказанию услуг аренды вычислительных мощностей и предоставлению доступа к прокси-серверам (далее — Услуги).</p>
             <p>1.2. В соответствии с пунктом 2 статьи 437 Гражданского Кодекса Российской Федерации (ГК РФ), в случае принятия изложенных ниже условий и оплаты услуг, физическое или юридическое лицо, производящее акцепт этой оферты, становится Заказчиком.</p>
-            <p>1.3. Оплата Услуг Заказчиком является полным и безоговорочным акцептом (принятием) условий настоящей Оферты.</p>
 
             <h3>2. ПРЕДМЕТ СОГЛАШЕНИЯ</h3>
             <p>2.1. Исполнитель обязуется предоставить Заказчику тестовый или постоянный доступ к сетевым прокси-серверам (выделенным портам передачи данных) в соответствии с выбранным тарифным планом, а Заказчик обязуется оплатить эти Услуги.</p>
-            <p>2.2. Услуги предоставляются исключительно в легальных целях: для тестирования программного обеспечения, оптимизации сетевого маршрута в компьютерных играх, анализа открытых данных (парсинга) и веб-разработки.</p>
 
             <h3>3. СТОИМОСТЬ УСЛУГ И ПОРЯДОК РАСЧЕТОВ</h3>
-            <p>3.1. Стоимость Услуг определяется действующими тарифными планами, размещенными на сайте GridPort:</p>
-            <p>- Тарифы "Lite" (1 ГБ/день): 1 месяц — 40 руб, 3 месяца — 110 руб, 6 месяцев — 200 руб, 12 месяцев — 380 руб.</p>
-            <p>- Тарифы "Basic" (2 ГБ/день): 1 месяц — 60 руб, 3 месяца — 170 руб, 6 месяцев — 320 руб, 12 месяцев — 590 руб.</p>
-            <p>- Дополнительный сетевой IP / устройство: 10 рублей в месяц (умножается на длительность выбранного тарифа).</p>
+            <p>3.1. Стоимость Услуг определяется действующими тарифными планами, размещенными в базе данных и динамически выводимыми на сайте GridPort.</p>
             <p>3.2. Оплата производится в форме 100% предоплаты через интегрированные на сайте платежные системы.</p>
-            <p>3.3. Услуга считается оказанной в полном объеме с момента отправки данных доступа на электронную почту Заказчика.</p>
 
             <h3>4. ПРАВА И ОБЯЗАННОСТИ СТОРОН</h3>
             <p>4.1. Исполнитель обязуется обеспечить стабильную работу предоставляемых портов в пределах заявленного аптайма (99.9%).</p>
-            <p>4.2. Заказчику строго запрещается использовать предоставленные мощности для совершения противоправных действий, включая хакерские атаки, рассылку спама (SPAM), распространение вредоносного ПО и нарушение законодательства РФ.</p>
+            <p>4.2. Заказчику строго запрещается использовать предоставленные мощности для совершения противоправных действий.</p>
 
-            <h3>5. ПОРЯДОК ВОЗВРАТА СРЕДСТВ И ОТВЕТСТВЕННОСТЬ</h3>
+            <h3>5. ПОРЯДОК ВОЗВРАТА СРЕДСТВ</h3>
             <p>5.1. Поскольку Услуга имеет цифровой характер и предоставляется в полном объеме сразу после оплаты, возврат средств за активированные и рабочие доступы не производится.</p>
-            <p>5.2. Исполнитель не несет ответственности за сбои в работе провайдеров интернета Заказчика.</p>
 
             <h3>6. КОНТАКТЫ ДЛЯ СВЯЗИ</h3>
             <p>Электронная почта поддержки: support@gridport.ru</p>
@@ -645,54 +544,112 @@
             
             <h3>1. КАКИЕ ДАННЫЕ МЫ СОБИРАЕМ</h3>
             <p>1.1. При оформлении заказа на сайте GridPort Пользователь указывает свой адрес электронной почты (Email).</p>
-            <p>1.2. Платежная система (процессинг) может собирать обезличенные данные о транзакции для проведения успешного платежа и фискализации чека.</p>
 
             <h3>2. ЦЕЛИ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ</h3>
-            <p>2.1. Электронный адрес Пользователя используется исключительно для:</p>
-            <p>- Автоматической отправки оплаченного товара (данных доступа к прокси).</p>
-            <p>- Связи службы поддержки с Пользователем в случае возникновения технических проблем.</p>
-            <p>2.2. Мы не собираем, не храним и не обрабатываем данные банковских карт пользователей — вся оплата происходит на защищенной стороне платежного шлюза.</p>
+            <p>2.1. Электронный адрес Пользователя используется исключительно для отправки оплаченного товара и связи поддержки.</p>
 
-            <h3>3. ЗАЩИТА И ПЕРЕДАЧА ДАННЫХ ТРЕТЬИМ ЛИЦАМ</h3>
+            <h3>3. ЗАЩИТА ДАННЫХ</h3>
             <p>3.1. Администрация сайта GridPort обязуется не продавать, не передавать и не разглашать адреса электронной почты пользователей третьим лицам.</p>
-            <p>3.2. Передача данных возможна только в случаях, прямо предусмотренных действующим законодательством РФ (по официальному запросу правоохранительных органов).</p>
-
-            <h3>4. ИЗМЕНЕНИЕ ПОЛИТИКИ</h3>
-            <p>4.1. Настоящая политика конфиденциальности может изменяться в одностороннем порядке. Новая редакция вступает в силу с момента ее публикации на этой странице.</p>
         </div>
     </div>
 
     <script>
-        // Слайдер доп. устройств
+        // Итоговый конфиг на фронтенде
+        let pricingData = null; 
+        const selectedTierId = 'basic'; // ID тарифа, который мы ищем в JSON
+
+        // Локальные стейты заказа
+        let activeTierId = '';
+        let activeDays = 30;
+        let activeBasePrice = 40;
+
         const slider = document.getElementById('extraIpSlider');
         const ipCountDisplay = document.getElementById('ipCountDisplay');
-        const currentPrices = document.querySelectorAll('.val');
-        const oldPrices = document.querySelectorAll('.old-val');
 
+        // Запускаем автоматическую загрузку цен из Firestore при открытии сайта
+        window.addEventListener('DOMContentLoaded', loadPricing);
+
+        async function loadPricing() {
+            try {
+                const response = await fetch('/api/get-pricing');
+                if (!response.ok) throw new Error('Ошибка сервера при получении тарифов');
+                pricingData = await response.json();
+                
+                // Рендерим тарифные карточки на основе JSON из БД
+                renderPlans();
+            } catch (err) {
+                console.error("Не удалось загрузить цены:", err);
+                document.querySelector('.pricing-grid').innerHTML = 
+                    `<p style="text-align: center; color: red; grid-column: 1 / -1;">Ошибка получения цен. Попробуйте обновить страницу.</p>`;
+            }
+        }
+
+        function renderPlans() {
+            const pricingGrid = document.querySelector('.pricing-grid');
+            pricingGrid.innerHTML = ''; // Стираем заглушку
+
+            const tier = pricingData.TIERS[selectedTierId];
+            if (!tier) {
+                pricingGrid.innerHTML = `<p style="text-align: center; grid-column: 1 / -1;">Тариф ${selectedTierId} не настроен в БД.</p>`;
+                return;
+            }
+
+            // Перебираем тарифы из массива JSON
+            tier.plans.forEach(plan => {
+                const badgeHtml = plan.badge ? `<div class="badge">${plan.badge}</div>` : '';
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                const months = Math.max(1, Math.round(plan.days / 30));
+
+                card.innerHTML = `
+                    ${badgeHtml}
+                    <h3>${tier.name} ${plan.name}</h3>
+                    <p class="term">${tier.trafficDesc} • На ${plan.days} дней</p>
+                    <div class="price-block">
+                        <span class="current-price">
+                            <span class="val" data-base="${plan.price}" data-months="${months}">${plan.price}</span> ₽
+                        </span>
+                        <span class="old-price">
+                            <span class="old-val" data-base="${plan.oldPrice}" data-months="${months}">${plan.oldPrice}</span> ₽
+                        </span>
+                    </div>
+                    <p class="desc">Идеально подходит для стабильного гейминга, парсинга данных и высокоскоростной веб-разработки.</p>
+                    <button class="btn" onclick="openModal('${selectedTierId}', ${plan.days}, '${tier.name} ${plan.name}', ${plan.price})">Оформить заказ</button>
+                `;
+                pricingGrid.appendChild(card);
+            });
+        }
+
+        // Логика слайдера (динамически ищет элементы на основе созданных карт)
         slider.addEventListener('input', function() {
+            if (!pricingData) return;
             const extraIps = parseInt(this.value);
             ipCountDisplay.textContent = extraIps;
             
-            // Логика: extraIps * 10 руб * data-months
+            const extraPricePerUnit = pricingData.EXTRA_DEVICE_PRICE || 10;
+
+            const currentPrices = document.querySelectorAll('.val');
             currentPrices.forEach(price => {
                 const base = parseInt(price.getAttribute('data-base'));
                 const months = parseInt(price.getAttribute('data-months') || 1);
-                
-                const addValue = extraIps * 10 * months;
-                price.textContent = base + addValue;
+                price.textContent = base + (extraIps * extraPricePerUnit * months);
             });
 
+            const oldPrices = document.querySelectorAll('.old-val');
             oldPrices.forEach(price => {
                 const base = parseInt(price.getAttribute('data-base'));
                 const months = parseInt(price.getAttribute('data-months') || 1);
-                
-                const addValue = extraIps * 10 * months;
-                price.textContent = base + addValue;
+                price.textContent = base + (extraIps * extraPricePerUnit * months);
             });
         });
 
-        // Управление модальными окнами
-        function openModal(tariffName) {
+        // Открытие модального окна покупки
+        function openModal(tierId, days, tariffName, basePrice) {
+            activeTierId = tierId;
+            activeDays = days;
+            activeBasePrice = basePrice;
+            
             const extraIps = parseInt(slider.value);
             let extraText = extraIps > 0 ? ` (+ ${extraIps} доп. IP)` : "";
             document.getElementById('modalTariffName').textContent = "Выбран: " + tariffName + extraText;
@@ -707,20 +664,58 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        // Закрытие при клике вне контента окна
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = 'none';
             }
         }
 
-        function fakePay() {
-            const emailInput = document.querySelector('#buyModal input').value;
-            if(emailInput.includes('@')) {
-                alert('Перенаправление на защищенный платежный шлюз...');
-                closeModal('buyModal');
-            } else {
+        // РЕАЛЬНЫЙ ПЕРЕХОД НА ОПЛАТУ
+        async function fakePay() {
+            const emailInput = document.querySelector('#buyModal input').value.trim();
+            if(!emailInput.includes('@')) {
                 alert('Пожалуйста, введите корректный адрес электронной почты.');
+                return;
+            }
+
+            const btn = document.querySelector('#buyModal .btn');
+            const originalText = btn.textContent;
+            
+            btn.textContent = 'Создание счета...';
+            btn.disabled = true;
+
+            const extraIps = parseInt(slider.value);
+            const newDeviceLimit = 3 + extraIps; 
+
+            try {
+                const response = await fetch('/api/create-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: emailInput,
+                        metadata: {
+                            tierId: activeTierId,
+                            daysToAdd: activeDays,
+                            newDeviceLimit: newDeviceLimit
+                        }
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Ошибка кассы: ' + (data.error || 'Неизвестная ошибка сервера'));
+                }
+            } catch (err) {
+                console.error("Ошибка сети:", err);
+                alert('Произошла ошибка сети. Попробуйте еще раз.');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
             }
         }
     </script>
