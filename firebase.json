@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/api/get-pricing",
+        "function": "getPricing"
+      },
+      {
         "source": "/api/create-payment",
         "function": "createPayment"
       }
