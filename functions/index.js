@@ -5,7 +5,7 @@ const crypto = require("crypto");
 admin.initializeApp();
 const db = admin.firestore();
 
-// 1. ПОЛУЧЕНИЕ ДИНАМИЧЕСКИХ ТАРИФОВ ИЗ FIRESTORE
+// 1. ПОЛУЧЕНИЕ ДИНАМИЧЕСКИХ ТАРИФОВ ИЗ ТЕКСТОВОГО JSON
 exports.getPricing = functions.https.onRequest(async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -17,16 +17,19 @@ exports.getPricing = functions.https.onRequest(async (req, res) => {
 
     try {
         const pricingDoc = await db.collection('settings').doc('pricing').get();
-        if (!pricingDoc.exists) {
-            return res.status(404).json({ error: 'Документ pricing не найден в Firestore (settings/pricing)' });
+        if (!pricingDoc.exists || !pricingDoc.data().json) {
+            return res.status(404).json({ error: 'Поле "json" не найдено в документе settings/pricing' });
         }
-        return res.status(200).json(pricingDoc.data());
+        
+        // Декодируем текстовую строку в настоящий JSON
+        const pricing = JSON.parse(pricingDoc.data().json);
+        return res.status(200).json(pricing);
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: "Ошибка парсинга JSON: " + err.message });
     }
 });
 
-// 2. СОЗДАНИЕ СЕССИИ ОПЛАТЫ НА ОСНОВЕ FIRESTORE
+// 2. СОЗДАНИЕ СЕССИИ ОПЛАТЫ НА ОСНОВЕ ТЕКСТОВОГО JSON
 exports.createPayment = functions.https.onRequest(async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -44,12 +47,12 @@ exports.createPayment = functions.https.onRequest(async (req, res) => {
         const { email, metadata } = req.body;
         const { tierId, daysToAdd, newDeviceLimit } = metadata;
 
-        // Читаем тарифы и цены из Firestore (settings/pricing)
+        // Читаем тарифы и декодируем из строки
         const pricingDoc = await db.collection('settings').doc('pricing').get();
-        if (!pricingDoc.exists) {
-            return res.status(500).json({ error: 'Тарифная сетка не найдена в Firestore' });
+        if (!pricingDoc.exists || !pricingDoc.data().json) {
+            return res.status(500).json({ error: 'Документ pricing или поле "json" не найдены в Firestore' });
         }
-        const pricing = pricingDoc.data();
+        const pricing = JSON.parse(pricingDoc.data().json);
 
         const selectedTier = pricing.TIERS[tierId];
         if (!selectedTier) return res.status(400).json({ error: 'Тариф не найден' });
@@ -68,7 +71,7 @@ exports.createPayment = functions.https.onRequest(async (req, res) => {
         const order_id = Date.now().toString() + Math.floor(Math.random() * 90 + 10).toString();
         const safeDesc = `Оплата заказа ${order_id}`;
 
-        // Читаем настройки AnyPay из Firestore (settings/anypay)
+        // Читаем настройки AnyPay
         const anypayDoc = await db.collection('settings').doc('anypay').get();
         if (!anypayDoc.exists) {
             return res.status(500).json({ error: 'Настройки AnyPay не найдены в Firestore (settings/anypay)' });
