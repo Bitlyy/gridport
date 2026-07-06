@@ -10,8 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
+    <!-- Подключаем MD5 шифрование для генерации подписи прямо в браузере -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
+
     <style>
-        /* Базовые настройки и строгий ЧБ стиль */
+        /* Базовые настройки и ЧБ стиль */
         :root {
             --bg-color: #ffffff;
             --card-bg: #f4f4f5;
@@ -92,7 +95,7 @@
             letter-spacing: -1px;
         }
 
-        /* Преимущества (с SVG иконками) */
+        /* Преимущества */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -305,7 +308,7 @@
             color: #a1a1aa;
         }
 
-        /* Модальные окна (Покупка + Документы) */
+        /* Модальные окна */
         .modal {
             display: none;
             position: fixed;
@@ -318,7 +321,6 @@
             padding: 20px;
         }
 
-        /* Контейнер для попапа покупки (узкий) */
         .modal-content {
             background-color: var(--white);
             padding: 40px 30px;
@@ -329,7 +331,6 @@
             position: relative;
         }
 
-        /* Контейнер для документов (широкий со скроллом) */
         .doc-modal-content {
             background-color: var(--white);
             padding: 40px;
@@ -400,7 +401,6 @@
             color: var(--text-muted);
         }
 
-        /* Адаптив */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -477,7 +477,6 @@
             </div>
         </div>
 
-        <!-- Сетка тарифов, которая отрисуется автоматически из Firestore -->
         <div class="pricing-grid">
             <p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">Загрузка тарифов...</p>
         </div>
@@ -508,7 +507,7 @@
         </div>
     </div>
 
-    <!-- Модальные окна с юридическими текстами (модераторы их проверяют) -->
+    <!-- Модальные окна с юридическими текстами -->
     <div id="termsModal" class="modal">
         <div class="doc-modal-content">
             <span class="close-btn" onclick="closeModal('termsModal')">&times;</span>
@@ -516,7 +515,7 @@
             
             <h3>1. ОБЩИЕ ПОЛОЖЕНИЯ</h3>
             <p>1.1. Настоящий документ является официальным предложением (публичной офертой) Исполнителя («Gridport Network Solutions») и содержит все существенные условия по оказанию услуг аренды вычислительных мощностей и предоставлению доступа к прокси-серверам (далее — Услуги).</p>
-            <p>1.2. В соответствии с пунктом 2 статьи 437 Гражданского Кодекса Российской Федерации (ГК РФ), в случае принятия изложенных ниже условий и оплаты услуг, физическое или юридическое лицо, производящее акцепт этой оферты, становится Заказчиком.</p>
+            <p>1.2. В соответствии с пунктом 2 статьи 437 Гражданского Кодекса Российской Федерации (ГК РФ), в случае принятия изложенных ниже условий и оплаты услуг, физическое или юридическое лицо, производищее акцепт этой оферты, становится Заказчиком.</p>
 
             <h3>2. ПРЕДМЕТ СОГЛАШЕНИЯ</h3>
             <p>2.1. Исполнитель обязуется предоставить Заказчику тестовый или постоянный доступ к сетевым прокси-серверам (выделенным портам передачи данных) в соответствии с выбранным тарифным планом, а Заказчик обязуется оплатить эти Услуги.</p>
@@ -554,9 +553,15 @@
     </div>
 
     <script>
+        // =========================================================================
+        // НАСТРОЙКИ ANYPAY НАПРЯМУЮ С КЛИЕНТА (УКАЖИТЕ ВАШИ ДАННЫЕ СЮДА)
+        // =========================================================================
+        const MERCHANT_ID = '17916'; // Ваш ID проекта в AnyPay
+        const SECRET_KEY = 'ВАШ_СЕКРЕТНЫЙ_КЛЮЧ_ANYPAY'; // Секретный ключ AnyPay
+
         // Итоговый конфиг на фронтенде
         let pricingData = null; 
-        const selectedTierId = 'basic'; // ID тарифа, который мы ищем в JSON
+        const selectedTierId = 'basic'; // Берем ID тарифа 'basic' из JSON
 
         // Локальные стейты заказа
         let activeTierId = '';
@@ -566,16 +571,17 @@
         const slider = document.getElementById('extraIpSlider');
         const ipCountDisplay = document.getElementById('ipCountDisplay');
 
-        // Запускаем автоматическую загрузку цен из Firestore при открытии сайта
+        // Запускаем автоматическую загрузку цен из локального JSON-файла
         window.addEventListener('DOMContentLoaded', loadPricing);
 
         async function loadPricing() {
             try {
-                const response = await fetch('/api/get-pricing');
-                if (!response.ok) throw new Error('Ошибка сервера при получении тарифов');
+                // Просто читаем статический файл pricing.json из папки хостинга
+                const response = await fetch('/pricing.json');
+                if (!response.ok) throw new Error('Ошибка чтения pricing.json');
                 pricingData = await response.json();
                 
-                // Рендерим тарифные карточки на основе JSON из БД
+                // Рендерим тарифные карточки на основе JSON
                 renderPlans();
             } catch (err) {
                 console.error("Не удалось загрузить цены:", err);
@@ -621,7 +627,7 @@
             });
         }
 
-        // Логика слайдера (динамически ищет элементы на основе созданных карт)
+        // Логика слайдера
         slider.addEventListener('input', function() {
             if (!pricingData) return;
             const extraIps = parseInt(this.value);
@@ -656,10 +662,6 @@
             document.getElementById('buyModal').style.display = 'flex';
         }
 
-        function openDoc(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-        }
-
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
@@ -670,53 +672,42 @@
             }
         }
 
-        // РЕАЛЬНЫЙ ПЕРЕХОД НА ОПЛАТУ
-        async function fakePay() {
+        // ПОЛНОСТЬЮ АВТОНОМНЫЙ ПЕРЕХОД НА ОПЛАТУ ЧЕРЕЗ КЛИЕНТСКИЙ MD5
+        function fakePay() {
             const emailInput = document.querySelector('#buyModal input').value.trim();
             if(!emailInput.includes('@')) {
                 alert('Пожалуйста, введите корректный адрес электронной почты.');
                 return;
             }
 
-            const btn = document.querySelector('#buyModal .btn');
-            const originalText = btn.textContent;
-            
-            btn.textContent = 'Создание счета...';
-            btn.disabled = true;
-
             const extraIps = parseInt(slider.value);
-            const newDeviceLimit = 3 + extraIps; 
+            const months = Math.max(1, Math.round(activeDays / 30));
+            
+            // Считаем итоговую цену
+            const finalPrice = activeBasePrice + (extraIps * (pricingData.EXTRA_DEVICE_PRICE || 10) * months);
+            const amountStr = Number(finalPrice).toFixed(2);
+            
+            const currency = 'RUB';
+            const order_id = Date.now().toString() + Math.floor(Math.random() * 90 + 10).toString();
+            const safeDesc = `Оплата заказа ${order_id}`;
 
-            try {
-                const response = await fetch('/api/create-payment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: emailInput,
-                        metadata: {
-                            tierId: activeTierId,
-                            daysToAdd: activeDays,
-                            newDeviceLimit: newDeviceLimit
-                        }
-                    })
-                });
+            // Рассчитываем подпись MD5: currency:amount:secret_key:merchant_id:pay_id
+            const signString = `${currency}:${amountStr}:${SECRET_KEY}:${MERCHANT_ID}:${order_id}`;
+            const signature = md5(signString);
 
-                const data = await response.json();
+            // Собираем параметры GET-запроса
+            const params = new URLSearchParams({
+                merchant_id: MERCHANT_ID,
+                pay_id: order_id,
+                amount: amountStr,
+                currency: currency,
+                desc: safeDesc,
+                email: emailInput,
+                sign: signature
+            });
 
-                if (response.ok && data.url) {
-                    window.location.href = data.url;
-                } else {
-                    alert('Ошибка кассы: ' + (data.error || 'Неизвестная ошибка сервера'));
-                }
-            } catch (err) {
-                console.error("Ошибка сети:", err);
-                alert('Произошла ошибка сети. Попробуйте еще раз.');
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
+            // Направляем на оплату AnyPay напрямую
+            window.location.href = `https://anypay.io/merchant?${params.toString()}`;
         }
     </script>
 </body>
