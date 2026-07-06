@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-    <!-- Подключаем MD5 шифрование для генерации подписи прямо в браузере -->
+    <!-- Подключаем MD5 шифрование для генерации подписи -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
 
     <style>
@@ -477,6 +477,7 @@
             </div>
         </div>
 
+        <!-- Сетка тарифов, которая отрисуется автоматически из pricing.json -->
         <div class="pricing-grid">
             <p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1;">Загрузка тарифов...</p>
         </div>
@@ -507,7 +508,6 @@
         </div>
     </div>
 
-    <!-- Модальные окна с юридическими текстами -->
     <div id="termsModal" class="modal">
         <div class="doc-modal-content">
             <span class="close-btn" onclick="closeModal('termsModal')">&times;</span>
@@ -515,13 +515,13 @@
             
             <h3>1. ОБЩИЕ ПОЛОЖЕНИЯ</h3>
             <p>1.1. Настоящий документ является официальным предложением (публичной офертой) Исполнителя («Gridport Network Solutions») и содержит все существенные условия по оказанию услуг аренды вычислительных мощностей и предоставлению доступа к прокси-серверам (далее — Услуги).</p>
-            <p>1.2. В соответствии с пунктом 2 статьи 437 Гражданского Кодекса Российской Федерации (ГК РФ), в случае принятия изложенных ниже условий и оплаты услуг, физическое или юридическое лицо, производищее акцепт этой оферты, становится Заказчиком.</p>
+            <p>1.2. В соответствии с пунктом 2 статьи 437 Гражданского Кодекса Российской Федерации (ГК РФ), в случае принятия изложенных ниже условий и оплаты услуг, физическое или юридическое лицо, производящее акцепт этой оферты, становится Заказчиком.</p>
 
             <h3>2. ПРЕДМЕТ СОГЛАШЕНИЯ</h3>
             <p>2.1. Исполнитель обязуется предоставить Заказчику тестовый или постоянный доступ к сетевым прокси-серверам (выделенным портам передачи данных) в соответствии с выбранным тарифным планом, а Заказчик обязуется оплатить эти Услуги.</p>
 
             <h3>3. СТОИМОСТЬ УСЛУГ И ПОРЯДОК РАСЧЕТОВ</h3>
-            <p>3.1. Стоимость Услуг определяется действующими тарифными планами, размещенными в базе данных и динамически выводимыми на сайте GridPort.</p>
+            <p>3.1. Стоимость Услуг определяется действующими тарифными планами, размещенными в файле и выводимыми на сайте GridPort.</p>
             <p>3.2. Оплата производится в форме 100% предоплаты через интегрированные на сайте платежные системы.</p>
 
             <h3>4. ПРАВА И ОБЯЗАННОСТИ СТОРОН</h3>
@@ -553,17 +553,11 @@
     </div>
 
     <script>
-        // =========================================================================
-        // НАСТРОЙКИ ANYPAY НАПРЯМУЮ С КЛИЕНТА (УКАЖИТЕ ВАШИ ДАННЫЕ СЮДА)
-        // =========================================================================
-        const MERCHANT_ID = '17916'; // Ваш ID проекта в AnyPay
-        const SECRET_KEY = 'ВАШ_СЕКРЕТНЫЙ_КЛЮЧ_ANYPAY'; // Секретный ключ AnyPay
-
-        // Итоговый конфиг на фронтенде
+        // Итоговые данные о тарифах
         let pricingData = null; 
-        const selectedTierId = 'basic'; // Берем ID тарифа 'basic' из JSON
+        const selectedTierId = 'basic'; // ID тарифа, который рендерим
 
-        // Локальные стейты заказа
+        // Переменные заказа
         let activeTierId = '';
         let activeDays = 30;
         let activeBasePrice = 40;
@@ -571,20 +565,20 @@
         const slider = document.getElementById('extraIpSlider');
         const ipCountDisplay = document.getElementById('ipCountDisplay');
 
-        // Запускаем автоматическую загрузку цен из локального JSON-файла
+        // Автозагрузка статического файла pricing.json (Firebase Hosting)
         window.addEventListener('DOMContentLoaded', loadPricing);
 
         async function loadPricing() {
             try {
-                // Просто читаем статический файл pricing.json из папки хостинга
+                // Прямой запрос к локальному файлу pricing.json без Cloud Functions!
                 const response = await fetch('/pricing.json');
                 if (!response.ok) throw new Error('Ошибка чтения pricing.json');
                 pricingData = await response.json();
                 
-                // Рендерим тарифные карточки на основе JSON
+                // На основе pricing.json рендерим карточки
                 renderPlans();
             } catch (err) {
-                console.error("Не удалось загрузить цены:", err);
+                console.error("Ошибка загрузки цен:", err);
                 document.querySelector('.pricing-grid').innerHTML = 
                     `<p style="text-align: center; color: red; grid-column: 1 / -1;">Ошибка получения цен. Попробуйте обновить страницу.</p>`;
             }
@@ -592,15 +586,15 @@
 
         function renderPlans() {
             const pricingGrid = document.querySelector('.pricing-grid');
-            pricingGrid.innerHTML = ''; // Стираем заглушку
+            pricingGrid.innerHTML = ''; 
 
             const tier = pricingData.TIERS[selectedTierId];
             if (!tier) {
-                pricingGrid.innerHTML = `<p style="text-align: center; grid-column: 1 / -1;">Тариф ${selectedTierId} не настроен в БД.</p>`;
+                pricingGrid.innerHTML = `<p style="text-align: center; grid-column: 1 / -1;">Тариф ${selectedTierId} не настроен в pricing.json</p>`;
                 return;
             }
 
-            // Перебираем тарифы из массива JSON
+            // Перебираем планы из JSON
             tier.plans.forEach(plan => {
                 const badgeHtml = plan.badge ? `<div class="badge">${plan.badge}</div>` : '';
                 const card = document.createElement('div');
@@ -627,7 +621,7 @@
             });
         }
 
-        // Логика слайдера
+        // Логика слайдера дополнительных устройств
         slider.addEventListener('input', function() {
             if (!pricingData) return;
             const extraIps = parseInt(this.value);
@@ -666,19 +660,27 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
+        // Закрытие по клику вне окна
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = 'none';
             }
         }
 
-        // ПОЛНОСТЬЮ АВТОНОМНЫЙ ПЕРЕХОД НА ОПЛАТУ ЧЕРЕЗ КЛИЕНТСКИЙ MD5
+        // ПОЛНОСТЬЮ АВТОНОМНЫЙ И СВОБОДНЫЙ ПЕРЕХОД НА КАССУ БЕЗ ВНЕШНИХ СЕРВЕРОВ И КАРТ
+        // (Обязательно настройте переменные MERCHANT_ID и SECRET_KEY ниже!)
         function fakePay() {
             const emailInput = document.querySelector('#buyModal input').value.trim();
             if(!emailInput.includes('@')) {
                 alert('Пожалуйста, введите корректный адрес электронной почты.');
                 return;
             }
+
+            // =========================================================================
+            // КОНФИГУРАЦИЯ СВЯЗИ С ANYPAY ПРЯМО НА КЛИЕНТЕ
+            // =========================================================================
+            const MERCHANT_ID = '17916'; // ID вашего проекта из AnyPay
+            const SECRET_KEY = 'ВАШ_СЕКРЕТНЫЙ_КЛЮЧ_ANYPAY'; // Секретный ключ AnyPay
 
             const extraIps = parseInt(slider.value);
             const months = Math.max(1, Math.round(activeDays / 30));
@@ -691,11 +693,11 @@
             const order_id = Date.now().toString() + Math.floor(Math.random() * 90 + 10).toString();
             const safeDesc = `Оплата заказа ${order_id}`;
 
-            // Рассчитываем подпись MD5: currency:amount:secret_key:merchant_id:pay_id
+            // Генерация MD5 подписи: currency:amount:secret_key:merchant_id:pay_id
             const signString = `${currency}:${amountStr}:${SECRET_KEY}:${MERCHANT_ID}:${order_id}`;
             const signature = md5(signString);
 
-            // Собираем параметры GET-запроса
+            // Параметры GET запроса
             const params = new URLSearchParams({
                 merchant_id: MERCHANT_ID,
                 pay_id: order_id,
@@ -706,7 +708,7 @@
                 sign: signature
             });
 
-            // Направляем на оплату AnyPay напрямую
+            // Направляем модератора на настоящую форму оплаты карт/СБП
             window.location.href = `https://anypay.io/merchant?${params.toString()}`;
         }
     </script>
