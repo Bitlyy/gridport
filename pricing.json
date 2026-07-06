@@ -1,0 +1,18 @@
+{
+  "TEST_MODE": true,
+  "EXTRA_DEVICE_PRICE": 10,
+  "TIERS": {
+    "basic": {
+      "id": "basic",
+      "name": "Basic",
+      "trafficDesc": "2 ГБ в день",
+      "trafficGB_per_day": 2,
+      "plans": [
+        { "id": "1m", "name": "1 месяц", "price": 40, "oldPrice": 50, "badge": "", "days": 30 },
+        { "id": "3m", "name": "3 месяца", "price": 110, "oldPrice": 120, "badge": "-8%", "days": 90 },
+        { "id": "6m", "name": "6 месяцев", "price": 200, "oldPrice": 240, "badge": "-16%", "days": 180 },
+        { "id": "12m", "name": "12 месяцев", "price": 380, "oldPrice": 480, "badge": "-20%", "days": 365 }
+      ]
+    }
+  }
+}
